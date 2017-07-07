@@ -32,48 +32,57 @@ uses
 procedure TTestViewItemBasic.Setup;
 begin
   frmViewItem := TfrmViewItem.Create(nil);
-//  frmViewItem.Show;
+  frmViewItem.Show;
 end;
 
 procedure TTestViewItemBasic.TearDown;
 begin
-//  frmViewItem.Close;
+  frmViewItem.Close;
   frmViewItem.Free;
 end;
 
 procedure TTestViewItemBasic.TestCreateViewItem(AItemId: string);
 var
   ItemInstance: TControl;
+  C: Integer;
 begin
+  // Factory를 이용한 컨트롤 생성
   ItemInstance := TViewItemFactory.Instance.CreateControl(AItemId);
   Assert.IsNotNull(ItemInstance);
 
   ItemInstance.Parent := frmViewItem.Panel1;
   ItemInstance.Align := TAlignLayout.Top;
-
-  Assert.AreEqual(frmViewItem.Panel1.ChildrenCount, 1);
 end;
 
 procedure TTestViewItemBasic.TestContainerViewItem;
 var
-  ItemInstance, ItemCtrl, Container: TControl;
+  ListInstance, ItemInstance, Container: TControl;
+  ItemClass: TViewItemClass;
 begin
-  ItemInstance := TViewItemFactory.Instance.CreateControl('ListBox');
-  Assert.IsNotNull(ItemInstance);
+  ListInstance := TViewItemFactory.Instance.CreateControl('ListBox');
+  Assert.IsNotNull(ListInstance);
 
-  ItemInstance.Parent := frmViewItem.Panel1;
-  ItemInstance.Align := TAlignLayout.Top;
+  ListInstance.Parent := frmViewItem.Panel1;
+  ListInstance.Align := TAlignLayout.Top;
 
-  Assert.IsTrue(Supports(ItemInstance, IViewItemContainer));
+  // ListBox
+  if Supports(ListInstance, IViewItemContainer) then
+    Container := (ListInstance as IViewItemContainer).GetContainerObject;
 
-  Assert.AreEqual(TfrListBox(ItemInstance).ListBox1.Count, 0);
+  Assert.IsNotNull(Container);
 
-  Container := (ItemInstance as IViewItemContainer).GetContainerObject;
+  Assert.AreEqual(TListBox(Container).Count, 0);
 
-  ItemCtrl := TViewItemFactory.Instance.CreateControl('ListBoxItemRightText.RightText');
-  ItemCtrl.Parent := Container;
+  // ViewItem Class로 ViewItem 생성
+  ItemClass := TViewItemFactory.Instance.GetClass('ListBoxItemRightText.RightText');
 
-  Assert.AreEqual(TfrListBox(ItemInstance).ListBox1.Count, 1);
+  ItemInstance := ItemClass.Create(Container);
+  ItemInstance.Parent := Container;
+  Assert.AreEqual(TListBox(Container).Count, 1);
+
+  ItemInstance := ItemClass.Create(Container);
+  ItemInstance.Parent := Container;
+  Assert.AreEqual(TListBox(Container).Count, 2);
 end;
 
 initialization

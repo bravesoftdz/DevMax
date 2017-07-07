@@ -17,7 +17,10 @@ uses
   DevMax.View.Factory in '..\..\Source\View\DevMax.View.Factory.pas',
   DevMax.View.Types in '..\..\Source\View\DevMax.View.Types.pas',
   DevMax.ViewItem.ListBox in '..\..\Source\ViewItem\DevMax.ViewItem.ListBox.pas' {frListBox: TFrame},
-  DevMax.ViewItem.ListBoxItem in '..\..\Source\ViewItem\DevMax.ViewItem.ListBoxItem.pas';
+  DevMax.ViewItem.ListBoxItem in '..\..\Source\ViewItem\DevMax.ViewItem.ListBoxItem.pas',
+  DevMax.View.Manager in '..\..\Source\View\DevMax.View.Manager.pas',
+  DevMax.View in '..\..\Source\View\DevMax.View.pas',
+  DevMax.Types.ViewInfo in '..\..\Source\Type\DevMax.Types.ViewInfo.pas';
 
 var
   runner : ITestRunner;

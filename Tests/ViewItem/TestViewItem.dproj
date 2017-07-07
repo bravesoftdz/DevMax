@@ -153,6 +153,9 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\..\Source\ViewItem\DevMax.ViewItem.ListBoxItem.pas"/>
+        <DCCReference Include="..\..\Source\View\DevMax.View.Manager.pas"/>
+        <DCCReference Include="..\..\Source\View\DevMax.View.pas"/>
+        <DCCReference Include="..\..\Source\Type\DevMax.Types.ViewInfo.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

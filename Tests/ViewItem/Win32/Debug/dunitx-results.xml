@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<test-results name="D:\Projects\DevMax\Tests\ViewItem\Win32\Debug\TestViewItem.exe" total="2" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2017-07-05" time="15.409">
+<test-results name="D:\Projects\DevMax\Tests\ViewItem\Win32\Debug\TestViewItem.exe" total="2" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2017-07-07" time="0.309">
   <culture-info current-culture="en" current-uiculture="en" />
-  <test-suite type="Assembly" name="TestViewItem.exe" executed="true" result="Success" success="True" time="15.409" asserts="0">
+  <test-suite type="Assembly" name="TestViewItem.exe" executed="true" result="Success" success="True" time="0.309" asserts="0">
     <results>
-        <test-suite type="Namespace" name="ViewItemBasicTest" executed="true" result="Success" success="True" time="15.409" asserts="0" >
+        <test-suite type="Namespace" name="ViewItemBasicTest" executed="true" result="Success" success="True" time="0.309" asserts="0" >
           <results>
-              <test-suite type="Fixture" name="TTestViewItemBasic" executed="True" result="Success" success="True" time="15.409" >
+              <test-suite type="Fixture" name="TTestViewItemBasic" executed="True" result="Success" success="True" time="0.309" >
                 <results>
                   <test-case name="TestCreateViewItem.ToolbarRightButton" executed="True" result="Success" success="True" time="0.000" asserts="0" />
-                  <test-case name="TestContainerViewItem" executed="True" result="Success" success="True" time="15.130" asserts="0" />
+                  <test-case name="TestContainerViewItem" executed="True" result="Success" success="True" time="0.001" asserts="0" />
                 </results>
               </test-suite>
           </results>
