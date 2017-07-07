@@ -41,15 +41,15 @@ type
         ListItems: TArray<TListBinidngItem>;
       end;
     public
-      ValueBinding: TValueBinding;
-      FieldBinding: TFieldBinding;
-      ListBinding: TListBinding;
+      ValueBindings: TArray<TValueBinding>;
+      FieldBindings: TArray<TFieldBinding>;
+      ListBindings: TArray<TListBinding>;
   end;
 
   TViewPageInfo = record
     Id: string;
     ViewItems: TArray<TViewItemInfo>;
-    Bindings: TArray<TViewItemBinding>;
+    Bindings: TViewItemBinding;
   end;
 
   TViewDataInfo = record

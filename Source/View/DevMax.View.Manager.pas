@@ -3,7 +3,9 @@ unit DevMax.View.Manager;
 interface
 
 uses
+  System.Classes, System.SysUtils,
   System.Generics.Collections, FMX.Controls,
+  DevMax.Types, DevMax.Types.ViewInfo,
   DevMax.View.Types, DevMax.View;
 
 type
@@ -13,6 +15,8 @@ type
     FViews: TDictionary<string, TView>;
     FActiveView: TView;
 
+    FManifestManager: IManifestManager;
+
     function CreateView(AViewId: string): TView;
     function GetOrCreateView(AViewId: string): TView;
     procedure ClearViews;
@@ -21,6 +25,7 @@ type
     destructor Destroy; override;
 
     property ViewContainer: TControl read FViewControl write FViewControl;
+    property ManifestManager: IManifestManager read FManifestManager write FManifestManager;
 
     procedure ShowView(AViewId: string);
   end;
@@ -55,8 +60,15 @@ begin
 end;
 
 function TViewManager.CreateView(AViewId: string): TView;
+var
+  ViewInfo: TViewInfo;
 begin
-  Result := TView.Create;
+  if not Assigned(FManifestManager) then
+    raise Exception.Create('Not assigned IManifestManager');
+
+  ViewInfo := FManifestManager.GetViewInfo(AViewId);
+
+  Result := TView.Create(AViewId, FViewControl, ViewInfo);
 
   FViews.Add(AViewId, Result);
 end;
