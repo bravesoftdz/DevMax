@@ -1,0 +1,17 @@
+object ListViewTextRightDetail: TListViewTextRightDetail
+  Align = Client
+  Size.Width = 376.000000000000000000
+  Size.Height = 473.000000000000000000
+  Size.PlatformDefault = False
+  object ListView1: TListView
+    ItemAppearanceClassName = 'TListItemAppearance'
+    ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+    HeaderAppearanceClassName = 'TListHeaderObjects'
+    FooterAppearanceClassName = 'TListHeaderObjects'
+    Align = Client
+    Size.Width = 376.000000000000000000
+    Size.Height = 473.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+end

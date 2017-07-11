@@ -3,6 +3,7 @@ unit DevMax.Types;
 interface
 
 uses
+  System.SysUtils,
   DevMax.Types.ViewInfo;
 
 type

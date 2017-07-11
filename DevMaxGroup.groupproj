@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{6025D9DA-2520-47DF-8199-F609F9776541}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Tests\ViewItem\TestViewItem.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\Client\DevMaxClient.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Source\EMSServer\DevMaxPackage.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TestViewItem">
+        <MSBuild Projects="Tests\ViewItem\TestViewItem.dproj"/>
+    </Target>
+    <Target Name="TestViewItem:Clean">
+        <MSBuild Projects="Tests\ViewItem\TestViewItem.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TestViewItem:Make">
+        <MSBuild Projects="Tests\ViewItem\TestViewItem.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DevMaxClient">
+        <MSBuild Projects="Source\Client\DevMaxClient.dproj"/>
+    </Target>
+    <Target Name="DevMaxClient:Clean">
+        <MSBuild Projects="Source\Client\DevMaxClient.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DevMaxClient:Make">
+        <MSBuild Projects="Source\Client\DevMaxClient.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DevMaxPackage">
+        <MSBuild Projects="Source\EMSServer\DevMaxPackage.dproj"/>
+    </Target>
+    <Target Name="DevMaxPackage:Clean">
+        <MSBuild Projects="Source\EMSServer\DevMaxPackage.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DevMaxPackage:Make">
+        <MSBuild Projects="Source\EMSServer\DevMaxPackage.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TestViewItem;DevMaxClient;DevMaxPackage"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TestViewItem:Clean;DevMaxClient:Clean;DevMaxPackage:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TestViewItem:Make;DevMaxClient:Make;DevMaxPackage:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

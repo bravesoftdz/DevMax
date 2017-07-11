@@ -3,6 +3,7 @@ unit DevMax.View.Factory;
 interface
 
 uses
+  System.Classes,
   System.Generics.Collections, FMX.Controls,
   DevMax.View.Types;
 
@@ -26,7 +27,7 @@ type
 
     procedure Regist(AId: string; AItemClass: TViewItemClass);
     function GetClass(AId: string): TViewItemClass;
-    function CreateControl(AId: string): TControl;
+    function CreateControl(AId: string; AOwner: TComponent = nil): TControl;
 
     property List: TArray<TViewItemClassInfo> read GetList;
 
@@ -65,14 +66,14 @@ begin
   FViewItems := TDictionary<string, TViewItemClassInfo>.Create;
 end;
 
-function TViewItemFactory.CreateControl(AId: string): TControl;
+function TViewItemFactory.CreateControl(AId: string; AOwner: TComponent = nil): TControl;
 var
   ItemClass: TViewItemClass;
 begin
   ItemClass := GetClass(AId);
   if not Assigned(ItemClass) then
     Exit(nil);
-  Result := ItemClass.Create(nil);
+  Result := ItemClass.Create(AOwner);
 end;
 
 destructor TViewItemFactory.Destroy;

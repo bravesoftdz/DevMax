@@ -20,14 +20,18 @@ type
     function CreateView(AViewId: string): TView;
     function GetOrCreateView(AViewId: string): TView;
     procedure ClearViews;
+    function GetViews: TArray<TView>;
   public
     constructor Create;
     destructor Destroy; override;
 
     property ViewContainer: TControl read FViewControl write FViewControl;
     property ManifestManager: IManifestManager read FManifestManager write FManifestManager;
+    property Views: TArray<TView> read GetViews;
 
     procedure ShowView(AViewId: string);
+
+    property ActiveView: TView read FActiveView;
   end;
 
 implementation
@@ -77,6 +81,11 @@ function TViewManager.GetOrCreateView(AViewId: string): TView;
 begin
   if not FViews.TryGetValue(AViewId, Result) then
     Result := CreateView(AViewId);
+end;
+
+function TViewManager.GetViews: TArray<TView>;
+begin
+  Result := FViews.Values.ToArray;
 end;
 
 procedure TViewManager.ShowView(AViewId: string);

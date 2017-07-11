@@ -6,6 +6,9 @@ uses
   FMX.Types, FMX.Controls, System.Generics.Collections;
 
 type
+  TPageChangeTransition = (None, Slide{, Popup});
+  TPageChangeTransitionDirection = (Normal, Reversed);
+
   TViewItemClass = class of TControl;
 
   TViewItemDataControl = record

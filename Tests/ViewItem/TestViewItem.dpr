@@ -14,14 +14,18 @@ uses
   ViewItemBasicTest in 'ViewItemBasicTest.pas',
   ViewItemTestForm in 'ViewItemTestForm.pas' {frmViewItem},
   DevMax.VIewItem.ToolbarRightButton in '..\..\Source\ViewItem\DevMax.VIewItem.ToolbarRightButton.pas' {ToolbarRightButton: TFrame},
-  DevMax.View.Factory in '..\..\Source\View\DevMax.View.Factory.pas',
-  DevMax.View.Types in '..\..\Source\View\DevMax.View.Types.pas',
   DevMax.ViewItem.ListBox in '..\..\Source\ViewItem\DevMax.ViewItem.ListBox.pas' {frListBox: TFrame},
   DevMax.ViewItem.ListBoxItem in '..\..\Source\ViewItem\DevMax.ViewItem.ListBoxItem.pas',
-  DevMax.View.Manager in '..\..\Source\View\DevMax.View.Manager.pas',
   DevMax.View in '..\..\Source\View\DevMax.View.pas',
+  DevMax.View.Types in '..\..\Source\View\DevMax.View.Types.pas',
+  DevMax.View.Factory in '..\..\Source\View\DevMax.View.Factory.pas',
+  DevMax.View.Manager in '..\..\Source\View\DevMax.View.Manager.pas',
+  DevMax.Types in '..\..\Source\Type\DevMax.Types.pas',
   DevMax.Types.ViewInfo in '..\..\Source\Type\DevMax.Types.ViewInfo.pas',
-  DevMax.Types in '..\..\Source\Type\DevMax.Types.pas';
+  TestViewInfoData in '..\Datas\TestViewInfoData.pas',
+  ViewManagerTest in 'ViewManagerTest.pas',
+  DevMax.ViewItem.Test in '..\..\Source\ViewItem\DevMax.ViewItem.Test.pas' {Frame1: TFrame},
+  DevMax.View.Control in '..\..\Source\View\DevMax.View.Control.pas';
 
 var
   runner : ITestRunner;
@@ -33,6 +37,7 @@ begin
   TestInsight.DUnitX.RunRegisteredTests;
   exit;
 {$ENDIF}
+
   try
     //Check command line options, will exit if invalid
     TDUnitX.CheckCommandLine;
