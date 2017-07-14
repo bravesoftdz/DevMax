@@ -1,4 +1,4 @@
-unit DevMaxModule;
+unit DevMaxResource;
 
 // EMS Resource Module
 
@@ -14,7 +14,7 @@ type
   published
     [ResourceSuffix('manifest/views')]
     procedure GetManifestViews(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
-    [ResourceSuffix('manifest/views/{ViewSeq}')]
+    [ResourceSuffix('manifest/views/{item}')]
     procedure GetManifestViewsItem(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
   end;
 
@@ -34,19 +34,15 @@ end;
 
 procedure TDevMaxManifestResource1.GetManifestViewsItem(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
 var
-  ViewSeq: Integer;
+  ViewId: string;
   JSONValue: TJSONValue;
 begin
-  ViewSeq := StrToIntDef(ARequest.Params.Values['ViewSeq'], 0);
-  // Sample code
 
-//  AResponse.Body.SetValue();
+  ViewId := ARequest.Params.Values['item'];
 
-  JSONValue := TDataAccessObject.Instance.GetViewInfo(ViewSeq) as TJSONValue;
+  JSONValue := TDataAccessObject.Instance.GetViewInfo(ViewId) as TJSONValue;
 
   AResponse.Body.SetValue(JSONValue, True);
-
-//  AResponse.Body.SetValue(TJSONString.Create('DevMax/Manifest ' + LItem), True)
 end;
 
 procedure Register;

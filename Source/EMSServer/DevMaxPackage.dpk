@@ -37,7 +37,7 @@ requires
   FireDACCommon;
 
 contains
-  DevMaxModule in 'DevMaxModule.pas' {DevMaxManifestResource1: TDataModule},
+  DevMaxResource in 'DevMaxResource.pas' {DevMaxManifestResource1: TDataModule},
   DataAccessObject in 'DataAccessObject.pas',
   DevMax.Utils.Converter in '..\Utils\DevMax.Utils.Converter.pas';
 

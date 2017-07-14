@@ -28,7 +28,8 @@ type
     procedure SetVisible(const Value: Boolean);
     procedure SetActivePage(const Value: TViewPage);
   public
-    constructor Create(AViewId: string; AContainer: TControl; AViewInfo: TViewInfo);
+    constructor Create(AViewId: string; AContainer: TControl;
+  AViewInfo: TViewInfo);
     destructor Destroy; override;
 
     procedure ChangePage(APageId: string; const ATransition: TPageChangeTransition = None;
@@ -54,7 +55,8 @@ type
 
     procedure CreateViewItems(AParent: TControl; AViewItems: TArray<TViewItemInfo>);
   public
-    constructor Create(APageId: string; AView: TView; APageInfo: TViewPageInfo);
+    constructor Create(APageId: string; AView: TView;
+  APageInfo: TViewPageInfo);
     destructor Destroy; override;
 
     property Id: string read FPageId;
@@ -133,7 +135,7 @@ var
 begin
   if not Assigned(FActivePage) then
   begin
-    ViewPage := GetOrCreatePage(FViewInfo.MainPageId);
+    ViewPage := GetOrCreatePage(FViewInfo.MAIN_PAGE_ID);
 
     ActivePage := ViewPage;
   end;
@@ -190,15 +192,15 @@ var
 begin
   for ItemInfo in AViewItems do
   begin
-    ItemInstance := TViewItemFactory.Instance.CreateControl(ItemInfo.ItemId);
+    ItemInstance := TViewItemFactory.Instance.CreateControl(ItemInfo.ITEM_ID);
     if not Assigned(ItemInstance) then
       Continue;
 
     ItemInstance.Parent := AParent;
-    ItemInstance.Align := ItemInfo.Align;
+    ItemInstance.Align := ItemInfo.ALIGN;
 
     if Supports(ItemInstance, IViewItem, ViewItem) then
-      FViewItems.Add(ItemInfo.Id, ViewItem);
+      FViewItems.Add(ItemInfo.ITEM_ID, ViewItem);
 
     if Length(ItemInfo.ViewItems) > 0 then
     begin

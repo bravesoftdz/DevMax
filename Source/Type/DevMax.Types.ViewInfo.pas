@@ -6,23 +6,32 @@ uses
   FMX.Types;
 
 type
+  FieldNameAttribute = class(TCustomAttribute)
+  private
+    FFieldName: string;
+  public
+    constructor Create(const AFieldName: string);
+    property FieldName: string read FFieldName;
+  end;
+
   TViewItemInfo = record
-    Id: string;
-    ItemId: string;
-    Align: TAlignLayout;
+    ITEM_ID: string;
+    ITEM_CLS_ID: string;
+    ALIGN: TAlignLayout;
+    HEIGHT: Single;
     ViewItems: TArray<TViewItemInfo>; // Child item
   end;
 
   TViewItemBinding = record
     type
       TValueBinding = record
-        ViewItemId: string;
+        ITEM_ID: string;
         ControlName: string;
         Value: string;
       end;
 
       TFieldBinding = record
-        ViewItemId: string;
+        ITEM_ID: string;
         ControlName: string;
         DataName: string;
         FieldName: string;
@@ -34,7 +43,7 @@ type
       end;
 
       TListBinding = record
-        ViewItemId: string;
+        ITEM_ID: string;
         ControlName: string;
         DataName: string;
         FieldName: string;
@@ -47,7 +56,7 @@ type
   end;
 
   TViewPageInfo = record
-    Id: string;
+    PAGE_ID: string;
     ViewItems: TArray<TViewItemInfo>;
     Bindings: TViewItemBinding;
   end;
@@ -58,15 +67,25 @@ type
   end;
 
   TViewInfo = record
-    Id: string;
-    MainPageId: string;
+    VIEW_ID: string;
+    MAIN_PAGE_ID: string;
+    ALIGN: TAlignLayout;
+    [FieldName('Pages')]
     ViewPages: TArray<TViewPageInfo>;
-    ViewDatas: TArray<TViewDataInfo>;
+//    ViewDatas: TArray<TViewDataInfo>;
 
-    function TryGetPageInfo(APageId: string; out PageInfo: TViewPageInfo): Boolean;
+    function TryGetPageInfo(APageId: string;
+  out PageInfo: TViewPageInfo): Boolean;
   end;
 
 implementation
+
+{ FieldNameAttribute }
+
+constructor FieldNameAttribute.Create(const AFieldName: string);
+begin
+  FFieldName := AFieldName;
+end;
 
 { TViewInfo }
 
@@ -78,7 +97,7 @@ begin
   Result := False;
   for Info in ViewPages do
   begin
-    if Info.Id = APageId then
+    if Info.PAGE_ID = APageId then
     begin
       PageInfo := Info;
       Exit(True);

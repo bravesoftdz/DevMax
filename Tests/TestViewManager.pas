@@ -1,4 +1,4 @@
-unit ViewManagerTest;
+unit TestViewManager;
 
 interface
 uses
