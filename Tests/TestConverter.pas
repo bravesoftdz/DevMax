@@ -22,7 +22,7 @@ implementation
 
 uses
   System.JSON, System.SysUtils,
-  DevMax.Utils.Converter, DevMax.Types.ViewInfo, TestViewInfoData;
+  DevMax.Utils.Marshalling, DevMax.Types.ViewInfo, TestViewInfoData;
 
 procedure TTestConverter.Setup;
 begin
@@ -38,19 +38,18 @@ var
   JsonString: string;
   Obj: TJSONObject;
   ViewInfo: TViewInfo;
-  Item: TViewItemInfo;
 begin
   JsonString := TestJsonString;
 
   Obj := TJSONObject.Create;
   Obj.Parse(TEncoding.ASCII.GetBytes(JsonString), 0);
-//  Value := TJSONObject.ParseJSONValue(JsonString);
 
-  TDataConverter.JSONToRecord<TViewInfo>(Obj, ViewInfo);
+  TMarshall.JSONToRecord<TViewInfo>(Obj, ViewInfo);
 
   Assert.AreEqual<string>(ViewInfo.VIEW_ID, 'V00000000001');
-
   Assert.AreEqual<string>(ViewInfo.ViewPages[0].PAGE_ID, 'P00000000001');
+  Assert.AreEqual<string>(ViewInfo.ViewPages[1].ViewItems[1].ITEM_ID, 'I00000000004');
+  Assert.AreEqual<string>(ViewInfo.ViewPages[1].ViewItems[1].ViewItems[1].ITEM_ID, 'I00000000006');
 end;
 
 initialization

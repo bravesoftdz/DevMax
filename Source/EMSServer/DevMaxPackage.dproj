@@ -113,7 +113,7 @@
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="DataAccessObject.pas"/>
-        <DCCReference Include="..\Utils\DevMax.Utils.Converter.pas"/>
+        <DCCReference Include="..\Utils\DevMax.Utils.Marshalling.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

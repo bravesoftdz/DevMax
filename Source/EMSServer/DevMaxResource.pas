@@ -41,6 +41,8 @@ begin
   ViewId := ARequest.Params.Values['item'];
 
   JSONValue := TDataAccessObject.Instance.GetViewInfo(ViewId) as TJSONValue;
+  if JSONValue = nil then
+    AResponse.RaiseNotFound();
 
   AResponse.Body.SetValue(JSONValue, True);
 end;

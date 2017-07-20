@@ -3,17 +3,9 @@ unit DevMax.Types.ViewInfo;
 interface
 
 uses
-  FMX.Types;
+  FMX.Types, DevMax.Utils.Marshalling;
 
 type
-  FieldNameAttribute = class(TCustomAttribute)
-  private
-    FFieldName: string;
-  public
-    constructor Create(const AFieldName: string);
-    property FieldName: string read FFieldName;
-  end;
-
   TViewItemInfo = record
     ITEM_ID: string;
     ITEM_CLS_ID: string;
@@ -70,7 +62,7 @@ type
     VIEW_ID: string;
     MAIN_PAGE_ID: string;
     ALIGN: TAlignLayout;
-    [FieldName('Pages')]
+    [FieldNameDef('Pages')]
     ViewPages: TArray<TViewPageInfo>;
 //    ViewDatas: TArray<TViewDataInfo>;
 
@@ -79,13 +71,6 @@ type
   end;
 
 implementation
-
-{ FieldNameAttribute }
-
-constructor FieldNameAttribute.Create(const AFieldName: string);
-begin
-  FFieldName := AFieldName;
-end;
 
 { TViewInfo }
 

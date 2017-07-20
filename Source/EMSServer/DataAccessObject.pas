@@ -31,7 +31,7 @@ implementation
 
 { TDataAccessObject }
 
-uses DevMax.Utils.Converter;
+uses DevMax.Utils.Marshalling;
 
 const
   SQL_VIEW_ITEM = 'SELECT VIEW_ID, MAIN_PAGE_ID FROM DMX_VIEW WHERE VIEW_ID = :VIEW_ID';
@@ -87,7 +87,10 @@ begin
     Query.ParamByName('VIEW_ID').AsString := AViewId;
     Query.Open;
 
-    TDataConverter.DataSetToJSONObject(Query, Result);
+    if Query.RecordCount = 0 then
+      Exit(nil);
+
+    TMarshall.DataSetToJSONObject(Query, Result);
 
     Result.AddPair('Pages', GetPagesInfo(AViewId));
   finally
@@ -106,7 +109,7 @@ begin
     Query.ParamByName('VIEW_ID').AsString := AViewId;
     Query.Open;
 
-    TDataConverter.DataSetToJSONArray(Query, Result, procedure(AObj: TJSONObject)
+    TMarshall.DataSetToJSONArray(Query, Result, procedure(AObj: TJSONObject)
       var
         PageId: string;
         Items: TJSONArray;
@@ -138,7 +141,7 @@ begin
       Query.ParamByName('PARENT_ITEM_ID').AsString := AParentItemId;
     Query.Open;
 
-    TDataConverter.DataSetToJSONArray(Query, Result, procedure(AObj: TJSONObject)
+    TMarshall.DataSetToJSONArray(Query, Result, procedure(AObj: TJSONObject)
       var
         ItemId: string;
         ChildItems: TJSONArray;

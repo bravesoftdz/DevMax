@@ -310,9 +310,19 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="MainForm.pas">
-            <Form>Form1</Form>
+            <Form>frmClientMain</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="..\Type\DevMax.Types.pas"/>
+        <DCCReference Include="..\Type\DevMax.Types.ViewInfo.pas"/>
+        <DCCReference Include="..\Utils\DevMax.Utils.Marshalling.pas"/>
+        <DCCReference Include="..\View\DevMax.View.Control.pas"/>
+        <DCCReference Include="..\View\DevMax.View.Factory.pas"/>
+        <DCCReference Include="..\View\DevMax.View.Manager.pas"/>
+        <DCCReference Include="..\View\DevMax.View.pas"/>
+        <DCCReference Include="..\View\DevMax.View.Types.pas"/>
+        <DCCReference Include="..\Services\DevMax.Service.Manifest.pas"/>
+        <DCCReference Include="..\DAO\DevMax.DAO.REST.Manifest.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

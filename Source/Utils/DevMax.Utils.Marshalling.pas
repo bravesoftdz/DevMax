@@ -1,22 +1,38 @@
-unit DevMax.Utils.Converter;
+unit DevMax.Utils.Marshalling;
 
 interface
 
 uses
-  DevMax.Types.ViewInfo, // 요기 있는게 맞나?(Need Refectoring)
-  FMX.Types,
   System.SysUtils, System.Classes, System.Rtti, System.TypInfo,
   Data.DB, Data.FmtBcd, System.JSON, System.IOUtils;
 
 type
+{
+  필드이름 정의 특성
+   - JSON Marshalling 시 구조체 필드이름으로 JSON 속성 매칭
+     필드이름과 JSON 속성 명이 다른 경우, 필드 위에 (JSON 속성명으로)특성 선언
+   - e.g. ViewPages -> Pages
+    [FieldNameDef('Pages')]
+    ViewPages: TArray<TViewPageInfo>;
+}
+  FieldNameDefAttribute = class(TCustomAttribute)
+  private
+    FFieldName: string;
+  public
+    constructor Create(const AFieldName: string);
+    property FieldName: string read FFieldName;
+  end;
+
   TJSONObjectEvent = reference to procedure(AObj: TJSONObject);
 
-  TDataConverter = class
+  TMarshall = class
   private
-    class procedure SetFieldValueFromJSONValue(var ARecord; AField: TRttiField; AValue: TJSONValue; AValueName: string = ''); overload;
-    class procedure SetFieldValueFromJSONValue(AInstance: Pointer; AField: TRttiField; AValue: TJSONValue; AValueName: string = ''); overload;
-    class procedure SetDynArrayFromJSONArray(AInstance: Pointer;
-  AField: TRttiField; AValue: TJSONValue); static;
+    /// ARecord의 AField에 AValue를 설정
+    class procedure SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AValue: TJSONValue; AValueName: string = ''); overload;
+    class procedure SetRecordFieldFromJSONValue(ARecordInstance: Pointer; AField: TRttiField; AValue: TJSONValue; AValueName: string = ''); overload;
+    /// ARecordInstance의 AField 배열에 AValue 배열을 설정
+    class procedure SetRecordDynArrayFromJSONArray(ARecordInstance: Pointer; AField: TRttiField; AValue: TJSONValue);
+    /// AField의 FieldNameAttribute 또는 Name(특성이 없는 경우) 반환
     class function GetFieldName(AField: TRttiField): string;
   public
     // DataSet & JSON
@@ -34,9 +50,16 @@ type
 
 implementation
 
+{ FieldNameAttribute }
+
+constructor FieldNameDefAttribute.Create(const AFieldName: string);
+begin
+  FFieldName := AFieldName;
+end;
+
 { TDataConverter }
 
-class procedure TDataConverter.DataSetToJSONArray(ADataSet: TDataSet;
+class procedure TMarshall.DataSetToJSONArray(ADataSet: TDataSet;
   AJSONArray: TJSONArray; AJSONObjectProc: TJSONObjectEvent = nil);
 var
   I: Integer;
@@ -49,7 +72,7 @@ begin
   DataSetToJSONArray(ADataSet, Fields, AJSONArray, AJSONObjectProc);
 end;
 
-class procedure TDataConverter.DataSetToJSONArray(ADataSet: TDataSet;
+class procedure TMarshall.DataSetToJSONArray(ADataSet: TDataSet;
   AFields: TArray<string>; AJSONArray: TJSONArray; AJSONObjectProc: TJSONObjectEvent = nil);
 var
   Obj: TJSONObject;
@@ -69,7 +92,7 @@ begin
   end;
 end;
 
-class procedure TDataConverter.DataSetToJSONObject(ADataSet: TDataSet;
+class procedure TMarshall.DataSetToJSONObject(ADataSet: TDataSet;
   AJSONObject: TJSONObject);
 var
   I: Integer;
@@ -82,7 +105,7 @@ begin
   DataSetToJSONObject(ADataSet, Fields, AJSONObject);
 end;
 
-class procedure TDataConverter.DataSetToJSONObject(ADataSet: TDataSet;
+class procedure TMarshall.DataSetToJSONObject(ADataSet: TDataSet;
   AFields: TArray<string>; AJSONObject: TJSONObject);
 var
   I: Integer;
@@ -139,33 +162,33 @@ begin
 end;
 
 // 구조체의 이름과 JSON 포맷의 이름이 다른 경우 FileNameAttribute에 JSON 포맷의 이름 지정 할 것
-class function TDataConverter.GetFieldName(AField: TRttiField): string;
+class function TMarshall.GetFieldName(AField: TRttiField): string;
 var
   Attr: TCustomAttribute;
 begin
   Result := AField.Name;
-    for Attr in AField.GetAttributes do
-    begin
-      if Attr is FieldNameAttribute then
-        Result := FieldNameAttribute(Attr).FieldName
-    end;
+  for Attr in AField.GetAttributes do
+  begin
+    if Attr is FieldNameDefAttribute then
+      Result := FieldNameDefAttribute(Attr).FieldName
+  end;
 end;
 
-class procedure TDataConverter.SetDynArrayFromJSONArray(AInstance: Pointer;
+// Dynamic Array에 JSON Array 데이터 담기
+class procedure TMarshall.SetRecordDynArrayFromJSONArray(ARecordInstance: Pointer;
   AField: TRttiField; AValue: TJSONValue);
 var
-  Ctx: TRttiContext;
   I, Len: Integer;
+  Ctx: TRttiContext;
   RecVal, ItemVal: TValue;
-  ItemRawData: Pointer;
   JSONArr: TJSONArray;
   JSONVal: TJSONValue;
-  RawData: Pointer;
+  RawData, ItemRawData: Pointer;
   ArrType: PTypeInfo;
   Field: TRttiField;
   FieldName: string;
 begin
-  RecVal := AField.GetValue(AInstance);
+  RecVal := AField.GetValue(ARecordInstance);
   if not RecVal.IsArray then
     Exit;
 
@@ -178,7 +201,7 @@ begin
   Len := JSONArr.Count;
   // 동적배열 길이 설정
   DynArraySetLength(PPointer(RawData)^, RecVal.TypeInfo, 1, @Len);
-  AField.SetValue(AInstance, RecVal); // SetValue 설정 안하면 원래 레코드에 적용 안됨
+  AField.SetValue(ARecordInstance, RecVal); // SetValue 설정 안하면 원래 레코드에 적용 안됨
 
   // 배열 요소의 타입
   ArrType := RecVal.TypeData.DynArrElType^;
@@ -193,8 +216,7 @@ begin
       for Field in Ctx.GetType(ArrType).GetFields do
       begin
         FieldName := GetFieldName(Field);
-        Log.d(FieldName);
-        SetFieldValueFromJSONValue(ItemRawData, Field, JSONVal, FieldName);
+        SetRecordFieldFromJSONValue(ItemRawData, Field, JSONVal, FieldName);
       end;
       RecVal.SetArrayElement(I, ItemVal); // SetArrayElement 안하면 원래 레코드에 적용 안됨
     end;
@@ -203,20 +225,19 @@ begin
   end;
 end;
 
-class procedure TDataConverter.SetFieldValueFromJSONValue(AInstance: Pointer;
+/// SetRecordFieldFromJSONValue
+class procedure TMarshall.SetRecordFieldFromJSONValue(ARecordInstance: Pointer;
   AField: TRttiField; AValue: TJSONValue; AValueName: string);
 var
   OrdValue: Integer;
 begin
-//  AValue.TryGetValue()
-
   case AField.FieldType.TypeKind of
     tkString, tkLString, tkWString, tkUString:
-      AField.SetValue(AInstance, TValue.From<string>(AValue.GetValue<string>(AValueName)));
+      AField.SetValue(ARecordInstance, TValue.From<string>(AValue.GetValue<string>(AValueName)));
     tkInteger, tkInt64:
-      AField.SetValue(AInstance, TValue.From<Integer>(AValue.GetValue<Integer>(AValueName, -1)));
+      AField.SetValue(ARecordInstance, TValue.From<Integer>(AValue.GetValue<Integer>(AValueName, -1)));
     tkFloat:
-      AField.SetValue(AInstance, TValue.From<Single>(AValue.GetValue<Single>(AValueName, -1)));
+      AField.SetValue(ARecordInstance, TValue.From<Single>(AValue.GetValue<Single>(AValueName, -1)));
     tkEnumeration:
       begin
         if not AValue.TryGetValue<Integer>(AValueName, OrdValue) then
@@ -229,27 +250,29 @@ begin
         if OrdValue < 0 then
           Exit;
 
-        AField.SetValue(AInstance, TValue.FromOrdinal(AField.FieldType.Handle, OrdValue));
+        AField.SetValue(ARecordInstance, TValue.FromOrdinal(AField.FieldType.Handle, OrdValue));
       end;
     tkDynArray:
       begin
+        // JSON Array
         if AValueName <> '' then
           AValue := AValue.GetValue<TJSONValue>(AValueName, nil);
-        SetDynArrayFromJSONArray(AInstance, AField, AValue);
+        SetRecordDynArrayFromJSONArray(ARecordInstance, AField, AValue);
       end;
     tkRecord:
       ;
+    { TODO: 필요한 필드타입 추가 구현 할 것 }
     else
       raise Exception.Create('Not support type: ' + AField.FieldType.ToString);
   end;
 end;
 
-class procedure TDataConverter.SetFieldValueFromJSONValue(var ARecord; AField: TRttiField; AValue: TJSONValue; AValueName: string = '');
+class procedure TMarshall.SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AValue: TJSONValue; AValueName: string = '');
 begin
-  SetFieldValueFromJSONValue(@ARecord, AField, AValue, AValueName);
+  SetRecordFieldFromJSONValue(@ARecord, AField, AValue, AValueName);
 end;
 
-class procedure TDataConverter.JSONToRecord<T>(AObj: TJSONObject;
+class procedure TMarshall.JSONToRecord<T>(AObj: TJSONObject;
   var ARecord: T);
 
 var
@@ -265,9 +288,10 @@ begin
       FieldName := GetFieldName(Field);
       Value := AObj.Values[FieldName];
       if not Assigned(Value) then
-        raise Exception.CreateFmt('Not found field.(Name: %s)', [FieldName]);
+        Continue;
+//        raise Exception.CreateFmt('Not found field.(Name: %s)', [FieldName]);
 
-      SetFieldValueFromJSONValue(ARecord, Field, Value);
+      SetRecordFieldFromJSONValue(ARecord, Field, Value);
     end;
   finally
     Ctx.Free;

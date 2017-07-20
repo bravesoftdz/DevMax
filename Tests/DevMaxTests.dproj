@@ -163,7 +163,9 @@
         </DCCReference>
         <DCCReference Include="..\Source\View\DevMax.View.Control.pas"/>
         <DCCReference Include="TestConverter.pas"/>
-        <DCCReference Include="..\Source\Utils\DevMax.Utils.Converter.pas"/>
+        <DCCReference Include="..\Source\Utils\DevMax.Utils.Marshalling.pas"/>
+        <DCCReference Include="..\Source\Services\DevMax.Service.Manifest.pas"/>
+        <DCCReference Include="..\Source\DAO\DevMax.DAO.REST.Manifest.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

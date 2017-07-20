@@ -1,32 +1,32 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<test-results name="D:\Projects\DevMax\Tests\Win32\Debug\DevMaxTests.exe" total="4" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2017-07-14" time="45.707">
+<test-results name="D:\Projects\DevMax\Tests\Win32\Debug\DevMaxTests.exe" total="4" errors="0" failures="0" ignored="0" inconclusive="0" not-run="0" skipped="0" invalid="0" date="2017-07-20" time="14.409">
   <culture-info current-culture="en" current-uiculture="en" />
-  <test-suite type="Assembly" name="DevMaxTests.exe" executed="true" result="Success" success="True" time="45.707" asserts="0">
+  <test-suite type="Assembly" name="DevMaxTests.exe" executed="true" result="Success" success="True" time="14.409" asserts="0">
     <results>
-        <test-suite type="Namespace" name="TestConverter" executed="true" result="Success" success="True" time="45.706" asserts="0" >
+        <test-suite type="Namespace" name="TestViewItemBasic" executed="true" result="Success" success="True" time="14.408" asserts="0" >
           <results>
-              <test-suite type="Fixture" name="TTestConverter" executed="True" result="Success" success="True" time="45.706" >
+              <test-suite type="Fixture" name="TTestViewItemBasic" executed="True" result="Success" success="True" time="14.408" >
                 <results>
-                  <test-case name="TestJOSNToRecord" executed="True" result="Success" success="True" time="45.367" asserts="0" />
+                  <test-case name="TestCreateViewItem.ToolbarRightButton" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                  <test-case name="TestContainerViewItem" executed="True" result="Success" success="True" time="0.001" asserts="0" />
                 </results>
               </test-suite>
           </results>
         </test-suite>
-        <test-suite type="Namespace" name="TestViewItemBasic" executed="true" result="Success" success="True" time="0.337" asserts="0" >
+        <test-suite type="Namespace" name="TestConverter" executed="true" result="Success" success="True" time="14.139" asserts="0" >
           <results>
-              <test-suite type="Fixture" name="TTestViewItemBasic" executed="True" result="Success" success="True" time="0.337" >
+              <test-suite type="Fixture" name="TTestConverter" executed="True" result="Success" success="True" time="14.139" >
                 <results>
-                  <test-case name="TestCreateViewItem.ToolbarRightButton" executed="True" result="Success" success="True" time="0.000" asserts="0" />
-                  <test-case name="TestContainerViewItem" executed="True" result="Success" success="True" time="0.002" asserts="0" />
+                  <test-case name="TestJOSNToRecord" executed="True" result="Success" success="True" time="0.000" asserts="0" />
                 </results>
               </test-suite>
           </results>
         </test-suite>
-        <test-suite type="Namespace" name="TestViewManager" executed="true" result="Success" success="True" time="0.015" asserts="0" >
+        <test-suite type="Namespace" name="TestViewManager" executed="true" result="Success" success="True" time="14.138" asserts="0" >
           <results>
-              <test-suite type="Fixture" name="TTestViewManager" executed="True" result="Success" success="True" time="0.015" >
+              <test-suite type="Fixture" name="TTestViewManager" executed="True" result="Success" success="True" time="14.138" >
                 <results>
-                  <test-case name="TestGetManifestData" executed="True" result="Success" success="True" time="0.000" asserts="0" />
+                  <test-case name="TestGetManifestData" executed="True" result="Success" success="True" time="14.129" asserts="0" />
                 </results>
               </test-suite>
           </results>

@@ -9,13 +9,15 @@ uses
   FMX.Controls.Presentation, FMX.StdCtrls;
 
 type
-  TfrmViewItem = class(TForm, IManifestManager)
+  TfrmViewItem = class(TForm, IManifestService)
     Panel1: TPanel;
   private
     { Private declarations }
   public
     { Public declarations }
-    function GetViewInfo(AViewId: string): TViewInfo;
+
+    { IManifestService }
+    function TryGetViewInfo(AViewId: string; out ViewInfo: TViewInfo): Boolean;
   end;
 
 var
@@ -27,10 +29,11 @@ implementation
 
 { TfrmViewItem }
 
-function TfrmViewItem.GetViewInfo(AViewId: string): TViewInfo;
+function TfrmViewItem.TryGetViewInfo(AViewId: string;
+  out ViewInfo: TViewInfo): Boolean;
 begin
-  Result := GetViewInfoData;
-//  Result := GetViewInfoData;
+  ViewInfo := GetViewInfoData;
+  Result := True;
 end;
 
 end.

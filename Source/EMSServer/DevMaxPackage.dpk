@@ -39,6 +39,6 @@ requires
 contains
   DevMaxResource in 'DevMaxResource.pas' {DevMaxManifestResource1: TDataModule},
   DataAccessObject in 'DataAccessObject.pas',
-  DevMax.Utils.Converter in '..\Utils\DevMax.Utils.Converter.pas';
+  DevMax.Utils.Marshalling in '..\Utils\DevMax.Utils.Marshalling.pas';
 
 end.

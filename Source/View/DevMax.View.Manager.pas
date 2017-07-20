@@ -6,7 +6,8 @@ uses
   System.Classes, System.SysUtils,
   System.Generics.Collections, FMX.Controls,
   DevMax.Types, DevMax.Types.ViewInfo,
-  DevMax.View.Types, DevMax.View;
+  DevMax.View.Types, DevMax.View,
+  DevMax.Service.Manifest;
 
 type
   TViewManager = class
@@ -15,18 +16,20 @@ type
     FViews: TDictionary<string, TView>;
     FActiveView: TView;
 
-    FManifestManager: IManifestManager;
+    FManifestService: IManifestService;
+//    FViewController: TViewController;
 
     function CreateView(AViewId: string): TView;
     function GetOrCreateView(AViewId: string): TView;
     procedure ClearViews;
     function GetViews: TArray<TView>;
+    function GetManifestService: IManifestService;
   public
     constructor Create;
     destructor Destroy; override;
 
     property ViewContainer: TControl read FViewControl write FViewControl;
-    property ManifestManager: IManifestManager read FManifestManager write FManifestManager;
+    property ManifestService: IManifestService read GetManifestService write FManifestService;
     property Views: TArray<TView> read GetViews;
 
     procedure ShowView(AViewId: string);
@@ -67,14 +70,22 @@ function TViewManager.CreateView(AViewId: string): TView;
 var
   ViewInfo: TViewInfo;
 begin
-  if not Assigned(FManifestManager) then
+  if not Assigned(ManifestService) then
     raise Exception.Create('Not assigned IManifestManager');
 
-  ViewInfo := FManifestManager.GetViewInfo(AViewId);
+  if not ManifestService.TryGetViewInfo(AViewId, ViewInfo) then
+    raise Exception.Create('Error Message');
 
   Result := TView.Create(AViewId, FViewControl, ViewInfo);
 
   FViews.Add(AViewId, Result);
+end;
+
+function TViewManager.GetManifestService: IManifestService;
+begin
+  if not Assigned(FManifestService) then
+    FManifestService := TManifestService.Create; // ARC 적용되어 해제하지 않아도 됨
+  Result := FManifestService;
 end;
 
 function TViewManager.GetOrCreateView(AViewId: string): TView;
