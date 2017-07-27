@@ -44,6 +44,7 @@ begin
   if JSONValue = nil then
     AResponse.RaiseNotFound();
 
+  AResponse.Headers.SetValue('Content-Type', 'charset=utf-8');
   AResponse.Body.SetValue(JSONValue, True);
 end;
 

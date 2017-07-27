@@ -12,7 +12,7 @@ uses
 type
   TViewManager = class
   private
-    FViewControl: TControl;
+    FViewContainer: TControl;
     FViews: TDictionary<string, TView>;
     FActiveView: TView;
 
@@ -27,7 +27,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    property ViewContainer: TControl read FViewControl write FViewControl;
+    property ViewContainer: TControl read FViewContainer write FViewContainer;
     property ManifestService: IManifestService read GetManifestService {$IFDEF TEST}write FManifestService{$ENDIF};
     property Views: TArray<TView> read GetViews;
 
@@ -72,10 +72,12 @@ begin
   if not Assigned(ManifestService) then
     raise Exception.Create('Not assigned IManifestManager');
 
+  { TODO : View가 생성되는 동안 UI 표시 }
+
   if not ManifestService.TryGetViewInfo(AViewId, ViewInfo) then
     raise Exception.Create('View 정보를 가져올 수 없습니다.');
 
-  Result := TView.Create(AViewId, FViewControl, ViewInfo);
+  Result := TView.Create(AViewId, FViewContainer, ViewInfo);
 
   FViews.Add(AViewId, Result);
 end;

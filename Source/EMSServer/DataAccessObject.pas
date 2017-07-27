@@ -21,7 +21,11 @@ type
 
     function GetViewInfo(AViewId: string): TJSONObject;
     function GetPagesInfo(AViewId: string): TJSONArray;
+
     function GetViewItemsInfo(APageId: string; AParentItemId: string = ''): TJSONArray;
+
+    function GetPageBindInfo(APageId: string): TJSONObject;
+    function GetPageBindValuesInfo(APageId: string): TJSONArray;
 
     class function Instance: TDataAccessObject;
     class procedure ReleaseInstance;
@@ -38,6 +42,8 @@ const
   SQL_PAGE_LIST = 'SELECT PAGE_ID FROM DMX_VIEW_PAGE WHERE VIEW_ID = :VIEW_ID';
   SQL_VIEW_ITEM_LIST        = 'SELECT ITEM_ID, ITEM_CLS_ID, ALIGN, HEIGHT FROM DMX_VIEW_ITEM WHERE PAGE_ID = :PAGE_ID AND PARENT_ITEM_ID IS NULL';
   SQL_VIEW_ITEM_LIST_CHILD  = 'SELECT ITEM_ID, ITEM_CLS_ID, ALIGN, HEIGHT FROM DMX_VIEW_ITEM WHERE PAGE_ID = :PAGE_ID AND PARENT_ITEM_ID = :PARENT_ITEM_ID';
+
+  SQL_VIEW_BIND_VALUE = 'SELECT ITEM_ID, CTRL_NAME, STR_VALUE FROM DMX_VIEW_BIND_VALUE WHERE PAGE_ID = :PAGE_ID';
 
 class function TDataAccessObject.Instance: TDataAccessObject;
 begin
@@ -56,7 +62,7 @@ constructor TDataAccessObject.Create;
 begin
   FDConnection := TFDConnection.Create(nil);
   FDConnection.DriverName := 'IB';
-  FDConnection.Params.Values['Database'] := 'D:\Projects\DevMax\Source\EMSServer\DB\DEVMAXMAINTENANCE.IB';
+  FDConnection.Params.Values['Database'] := 'D:\Projects\DevMax\Source\Output\DB\DEVMAXMAINTENANCE.IB';
   FDConnection.Params.Values['User_Name'] := 'sysdba';
   FDConnection.Params.Values['Password'] := 'masterkey';
   FDConnection.Params.Values['CharacterSet'] := 'UTF8';
@@ -98,6 +104,30 @@ begin
   end;
 end;
 
+function TDataAccessObject.GetPageBindInfo(APageId: string): TJSONObject;
+begin
+  Result := TJSONObject.Create;
+
+  Result.AddPair('BindValues', GetPageBindValuesInfo(APageId));
+end;
+
+function TDataAccessObject.GetPageBindValuesInfo(APageId: string): TJSONArray;
+var
+  Query: TFDQuery;
+begin
+  Result := TJSONArray.Create;
+  Query := GetQuery;
+  try
+    Query.SQL.Text := SQL_VIEW_BIND_VALUE;
+    Query.ParamByName('PAGE_ID').AsString := APageId;
+    Query.Open;
+
+    TMarshall.DataSetToJSONArray(Query, Result);
+  finally
+    Query.Free;
+  end;
+end;
+
 function TDataAccessObject.GetPagesInfo(AViewId: string): TJSONArray;
 var
   Query: TFDQuery;
@@ -113,11 +143,14 @@ begin
       var
         PageId: string;
         Items: TJSONArray;
+        BindItem: TJSONObject;
       begin
         PageId := AObj.GetValue<string>('PAGE_ID');
         Items := GetViewItemsInfo(PageId);
         if Items.Count > 0 then
           AObj.AddPair('ViewItems', Items);
+        BindItem := GetPageBindInfo(PageId);
+        AObj.AddPair('BindInfo', BindItem);
       end
     );
   finally

@@ -29,11 +29,8 @@ uses DevMax.Utils.Marshalling, System.JSON;
 constructor TManifestRESTDAO.Create;
 begin
   FRESTClient := TRESTClient.Create(nil);
-//{$IFDEF WIN32}
-//  FRESTClient.BaseURL := 'http://localhost:8080';
-//{$ELSE}
+  { TODO : 서버 주소 환경변수 처리 }
   FRESTClient.BaseURL := 'http://192.168.168.106:8080';
-//{$ENDIF}
 
   FRESTResponse := TRESTResponse.Create(nil);
 

@@ -26,10 +26,11 @@ uses
   TestViewManager in 'TestViewManager.pas',
   DevMax.ViewItem.Test in '..\Source\ViewItem\DevMax.ViewItem.Test.pas' {Frame1: TFrame},
   DevMax.View.Control in '..\Source\View\DevMax.View.Control.pas',
-  TestConverter in 'TestConverter.pas',
   DevMax.Utils.Marshalling in '..\Source\Utils\DevMax.Utils.Marshalling.pas',
   DevMax.Service.Manifest in '..\Source\Services\DevMax.Service.Manifest.pas',
-  DevMax.DAO.REST.Manifest in '..\Source\DAO\DevMax.DAO.REST.Manifest.pas';
+  DevMax.DAO.REST.Manifest in '..\Source\DAO\DevMax.DAO.REST.Manifest.pas',
+  TestManifest in 'TestManifest.pas',
+  DevMax.Utils.Binder in '..\Source\Utils\DevMax.Utils.Binder.pas';
 
 var
   runner : ITestRunner;

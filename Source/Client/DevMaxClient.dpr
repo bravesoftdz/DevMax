@@ -18,11 +18,14 @@ uses
   DevMax.ViewItem.ListViewTextRightDetail in '..\ViewItem\DevMax.ViewItem.ListViewTextRightDetail.pas' {ListViewTextRightDetail: TFrame},
   DevMax.ViewItem.Test in '..\ViewItem\DevMax.ViewItem.Test.pas' {Frame1: TFrame},
   DevMax.VIewItem.ToolbarRightButton in '..\ViewItem\DevMax.VIewItem.ToolbarRightButton.pas' {ToolbarRightButton: TFrame},
-  DevMax.Utils.Marshalling in '..\Utils\DevMax.Utils.Marshalling.pas';
+  DevMax.Utils.Marshalling in '..\Utils\DevMax.Utils.Marshalling.pas',
+  DevMax.Utils.Binder in '..\Utils\DevMax.Utils.Binder.pas';
 
 {$R *.res}
 
 begin
+  ReportMemoryLeaksOnShutdown := True;
+
   Application.Initialize;
   Application.CreateForm(TfrmClientMain, frmClientMain);
   Application.Run;

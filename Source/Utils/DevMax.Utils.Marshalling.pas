@@ -30,6 +30,9 @@ type
     /// 구조체(ARecord, ARecordInstance)의 필드(AField)에 JSON값으로 값을 채운다.
     class procedure SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AJSONValue: TJSONValue; AValueName: string = ''); overload;
     class procedure SetRecordFieldFromJSONValue(ARecordInstance: Pointer; AField: TRttiField; AJSONValue: TJSONValue; AValueName: string = ''); overload;
+
+    class procedure SetRecordFieldsFromJSONValue(ARecordInstance: Pointer; AField: TRttiField; AJSONValue: TJSONValue); overload;
+
     /// 구조체의 동적 배열 필드에 JSON배열의 값으로 길이 설정 후 값을 채운다.
     class procedure SetRecordDynArrayFromJSONArray(ARecordInstance: Pointer; AArrField: TRttiField; AJSONArray: TJSONArray);
 
@@ -49,7 +52,8 @@ type
 
     // JSON & Record
     /// JSON의 데이터로 구조체에 값을 채운다(동적 배열 포함)
-    class procedure JSONToRecord<T>(AObj: TJSONObject; var ARecord: T);
+    class procedure JSONToRecord<T>(AJSONValue: TJSONValue;
+  var ARecord: T);
   end;
 
 implementation
@@ -203,9 +207,6 @@ begin
   if not RecVal.IsArray then
     Exit;
 
-  if not (AJSONArray is TJSONArray) then
-    Exit;
-
   RecRawData := RecVal.GetReferenceToRawData; // 배열의 데이터 포인터
   Len := AJSONArray.Count;
   // 동적배열 길이 설정
@@ -266,13 +267,42 @@ begin
         // JSON Array
         if AValueName <> '' then
           AJSONValue := AJSONValue.GetValue<TJSONValue>(AValueName, nil);
-        SetRecordDynArrayFromJSONArray(ARecordInstance, AField, AJSONValue as TJSONArray);
+        if Assigned(AJSONValue) then
+          SetRecordDynArrayFromJSONArray(ARecordInstance, AField, AJSONValue as TJSONArray);
       end;
     tkRecord:
-      ;
+      begin
+        if AValueName <> '' then
+          AJSONValue := AJSONValue.GetValue<TJSONValue>(AValueName, nil);
+        if Assigned(AJSONValue) then
+          SetRecordFieldsFromJSONValue(ARecordInstance, AField, AJSONValue);
+      end;
     { TODO: 필요한 필드타입 추가 구현 할 것 }
     else
       raise Exception.Create('Not support type: ' + AField.FieldType.ToString);
+  end;
+end;
+
+class procedure TMarshall.SetRecordFieldsFromJSONValue(ARecordInstance: Pointer; AField: TRttiField; AJSONValue: TJSONValue);
+var
+  Ctx: TRttiContext;
+  Field: TRttiField;
+  FieldName: string;
+  RecVal: TValue;
+//  JSONValue: TJSONValue;
+begin
+  Ctx := TRttiContext.Create;
+  try
+    RecVal := AField.GetValue(ARecordInstance);
+
+    for Field in Ctx.GetType(RecVal.TypeInfo).GetFields do
+    begin
+      FieldName := GetFieldName(Field);
+      SetRecordFieldFromJSONValue(RecVal.GetReferenceToRawData, Field, AJSONValue, FieldName);
+    end;
+    AField.SetValue(ARecordInstance, RecVal);
+  finally
+    Ctx.Free;
   end;
 end;
 
@@ -281,7 +311,7 @@ begin
   SetRecordFieldFromJSONValue(@ARecord, AField, AJSONValue, AValueName);
 end;
 
-class procedure TMarshall.JSONToRecord<T>(AObj: TJSONObject;
+class procedure TMarshall.JSONToRecord<T>(AJSONValue: TJSONValue;
   var ARecord: T);
 var
   Ctx: TRttiContext;
@@ -294,8 +324,7 @@ begin
     for Field in Ctx.GetType(TypeInfo(T)).GetFields do
     begin
       FieldName := GetFieldName(Field);
-      Value := AObj.Values[FieldName];
-      if not Assigned(Value) then
+      if not AJSONValue.TryGetValue<TJSONValue>(FieldName, Value) then
         Continue;
 
       SetRecordFieldFromJSONValue(ARecord, Field, Value);

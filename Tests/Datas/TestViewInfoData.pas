@@ -38,7 +38,23 @@ begin
   s := s + '          "ALIGN":9,';
   s := s + '          "HEIGHT":null';
   s := s + '        }';
-  s := s + '      ]';
+  s := s + '      ], ';
+  s := s + '      "BindInfo":';
+  s := s + '      {';
+  s := s + '        "BindValues":';
+  s := s + '        [';
+  s := s + '          {';
+  s := s + '            "ITEM_ID":"I00000000001",';
+  s := s + '            "CTRL_NAME":"TitleLabel",';
+  s := s + '            "STR_VALUE":"DB의 값"';
+  s := s + '          }, ';
+  s := s + '          {';
+  s := s + '            "ITEM_ID":"I00000000001",';
+  s := s + '            "CTRL_NAME":"ButtonCaption",';
+  s := s + '            "STR_VALUE":"테스트"';
+  s := s + '          }';
+  s := s + '        ] ';
+  s := s + '      }';
   s := s + '    },';
   s := s + '    {';
   s := s + '      "PAGE_ID":"P00000000002",';
@@ -89,20 +105,20 @@ begin
   SetLength(ViewInfo.ViewPages, 2);
 
   ViewInfo.ViewPages[0].PAGE_ID := 'P00000000001';
-//  SetLength(ViewInfo.ViewPages[0].ViewItems, 2);
-//
-//  ViewInfo.ViewPages[0].ViewItems[0].ITEM_ID := 'I00000000001';
-//  ViewInfo.ViewPages[0].ViewItems[0].ITEM_CLS_ID := 'ToolbarRightButton';
-//  ViewInfo.ViewPages[0].ViewItems[0].ALIGN := TAlignLayout.Top; // 1
-//
-//  ViewInfo.ViewPages[0].ViewItems[1].ITEM_ID := 'I00000000002';
-//  ViewInfo.ViewPages[0].ViewItems[1].ITEM_CLS_ID := 'TestViewItem';
-//  ViewInfo.ViewPages[0].ViewItems[1].ALIGN := TAlignLayout.Client;  // 9
-//
-//  SetLength(ViewInfo.ViewPages[0].Bindings.ValueBindings, 1);
-//  ViewInfo.ViewPages[0].Bindings.ValueBindings[0].ITEM_ID := 'I00000000001';
-//  ViewInfo.ViewPages[0].Bindings.ValueBindings[0].ControlName := 'TitleLabel';
-//  ViewInfo.ViewPages[0].Bindings.ValueBindings[0].Value := 'Runtime Test';
+  SetLength(ViewInfo.ViewPages[0].ViewItems, 2);
+
+  ViewInfo.ViewPages[0].ViewItems[0].ITEM_ID := 'I00000000001';
+  ViewInfo.ViewPages[0].ViewItems[0].ITEM_CLS_ID := 'ToolbarRightButton';
+  ViewInfo.ViewPages[0].ViewItems[0].ALIGN := TAlignLayout.Top; // 1
+
+  ViewInfo.ViewPages[0].ViewItems[1].ITEM_ID := 'I00000000002';
+  ViewInfo.ViewPages[0].ViewItems[1].ITEM_CLS_ID := 'TestViewItem';
+  ViewInfo.ViewPages[0].ViewItems[1].ALIGN := TAlignLayout.Client;  // 9
+
+  SetLength(ViewInfo.ViewPages[0].BindInfo.BindValues, 1);
+  ViewInfo.ViewPages[0].BindInfo.BindValues[0].ITEM_ID := 'I00000000001';
+  ViewInfo.ViewPages[0].BindInfo.BindValues[0].CTRL_NAME := 'TitleLabel';
+  ViewInfo.ViewPages[0].BindInfo.BindValues[0].STR_VALUE := 'Runtime Test';
 
   ViewInfo.ViewPages[1].PAGE_ID := 'P00000000002';
   SetLength(ViewInfo.ViewPages[1].ViewItems, 2);
@@ -125,11 +141,11 @@ begin
 //  ViewInfo.Pages[1].ViewItems[1].ViewItems[1].Align := TAlignLayout.Client;
 
 
-  SetLength(ViewInfo.ViewPages[1].Bindings.FieldBindings, 1);
-  ViewInfo.ViewPages[1].Bindings.FieldBindings[0].DataName := 'Employee';
-  ViewInfo.ViewPages[1].Bindings.FieldBindings[0].FieldName := 'name';
-  ViewInfo.ViewPages[1].Bindings.FieldBindings[0].ITEM_ID := 'I00000000003';
-  ViewInfo.ViewPages[1].Bindings.FieldBindings[0].ControlName := 'TitleLabel';
+//  SetLength(ViewInfo.ViewPages[1].BindInfo.BindFields, 1);
+//  ViewInfo.ViewPages[1].BindInfo.BindFields[0].DataName := 'Employee';
+//  ViewInfo.ViewPages[1].BindInfo.BindFields[0].FieldName := 'name';
+//  ViewInfo.ViewPages[1].BindInfo.BindFields[0].ITEM_ID := 'I00000000003';
+//  ViewInfo.ViewPages[1].BindInfo.BindFields[0].ControlName := 'TitleLabel';
 
 
   Result := ViewInfo;

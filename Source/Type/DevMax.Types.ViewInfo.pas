@@ -14,43 +14,43 @@ type
     ViewItems: TArray<TViewItemInfo>; // Child item
   end;
 
-  TViewItemBinding = record
-    type
-      TValueBinding = record
-        ITEM_ID: string;
-        ControlName: string;
-        Value: string;
-      end;
+  TViewItemBindInfo = record
+  type
+    TBindValueInfo = record
+      ITEM_ID: string;
+      CTRL_NAME: string;
+      STR_VALUE: string;
+    end;
 
-      TFieldBinding = record
-        ITEM_ID: string;
-        ControlName: string;
-        DataName: string;
-        FieldName: string;
-      end;
+    TBindFieldInfo = record
+      ITEM_ID: string;
+      ControlName: string;
+      DataName: string;
+      FieldName: string;
+    end;
 
-      TListBinidngItem = record
-        ControlName: string;
-        FieldName: string;
-      end;
+    TBindListItem = record
+      ControlName: string;
+      FieldName: string;
+    end;
 
-      TListBinding = record
-        ITEM_ID: string;
-        ControlName: string;
-        DataName: string;
-        FieldName: string;
-        ListItems: TArray<TListBinidngItem>;
-      end;
-    public
-      ValueBindings: TArray<TValueBinding>;
-      FieldBindings: TArray<TFieldBinding>;
-      ListBindings: TArray<TListBinding>;
+    TBindListInfo = record
+      ITEM_ID: string;
+      ControlName: string;
+      DataName: string;
+      FieldName: string;
+      ListItems: TArray<TBindListItem>;
+    end;
+  public
+    BindValues: TArray<TBindValueInfo>;
+//    BindFields: TArray<TFieldBinding>;
+//    BindLists: TArray<TListBinding>;
   end;
 
   TViewPageInfo = record
     PAGE_ID: string;
     ViewItems: TArray<TViewItemInfo>;
-    Bindings: TViewItemBinding;
+    BindInfo: TViewItemBindInfo;
   end;
 
   TViewDataInfo = record

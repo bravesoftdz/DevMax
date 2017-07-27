@@ -5,7 +5,8 @@ interface
 uses
   FMX.Controls, FMX.Types,
   System.Generics.Collections,
-  DevMax.Types.ViewInfo, DevMax.View.Types, DevMax.View.Control;
+  DevMax.Types.ViewInfo, DevMax.View.Types, DevMax.View.Control,
+  DevMax.Utils.Binder;
 
 type
   TViewPage = class;
@@ -56,11 +57,13 @@ type
     FControl: TViewPageControlItem;
 
     procedure CreateViewItems(AParent: TControl; AViewItems: TArray<TViewItemInfo>);
+    procedure BindViewItems(ABindInfo: TViewItemBindInfo);
   public
     constructor Create(APageId: string; AView: TView; APageInfo: TViewPageInfo);
     destructor Destroy; override;
 
     property Id: string read FPageId;
+    property Control: TViewPageControlItem read FControl;
   end;
 
 implementation
@@ -128,6 +131,7 @@ begin
     Exit;
 
   // Control Ã³¸®
+  FPageControl.ChangePage(APage.Control);
 
   FActivePage := APage;
 end;
@@ -169,6 +173,33 @@ end;
 
 { TViewPage }
 
+procedure TViewPage.BindViewItems(ABindInfo: TViewItemBindInfo);
+  function TryGetControl(AViewId, AControlName: string; out DataControl: TViewItemDataControl): Boolean;
+  var
+    ViewItem: IViewItem;
+  begin
+    Result := False;
+    // Find ViewItem
+    if FViewItems.TryGetValue(AViewId, ViewItem) then
+      // Find DataControl
+      Result := ViewItem.DataControls.TryGetValue(AControlName, DataControl);
+  end;
+
+  procedure BindValue(ABindInfos: TArray<TViewItemBindInfo.TBindValueInfo>);
+  var
+    Info: TViewItemBindInfo.TBindValueInfo;
+    Control: TViewItemDataControl;
+  begin
+    for Info in ABindInfos do
+    begin
+      if TryGetControl(Info.ITEM_ID, Info.CTRL_NAME, Control) then
+        TDataBinder.BindValue(Control.Control, Control.PropertyName, Info.STR_VALUE);
+    end;
+  end;
+begin
+  BindValue(ABindInfo.BindValues);
+end;
+
 constructor TViewPage.Create(APageId: string; AView: TView;
   APageInfo: TViewPageInfo);
 begin
@@ -181,6 +212,7 @@ begin
   FControl.Parent := AView.Control;
 
   CreateViewItems(FControl, APageInfo.ViewItems);
+  BindViewItems(APageInfo.BindInfo);
 end;
 
 destructor TViewPage.Destroy;

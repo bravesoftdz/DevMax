@@ -15,7 +15,7 @@ type
     FActivePage: TViewPageControlItem;
   protected
     procedure Resize; override;
-
+  public
     procedure ChangePage(AViewPage: TViewPageControlItem; const ATransition: TPageChangeTransition = None;
       const ADirection: TPageChangeTransitionDirection = Normal); overload;
   end;

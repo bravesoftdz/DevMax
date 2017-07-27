@@ -12,9 +12,8 @@ type
   TfrmClientMain = class(TForm)
     lytMain: TLayout;
     MultiView1: TMultiView;
-    Rectangle1: TRectangle;
     Button1: TButton;
-    Layout1: TLayout;
+    lytContainer: TLayout;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -43,7 +42,7 @@ end;
 procedure TfrmClientMain.FormCreate(Sender: TObject);
 begin
   FViewManager := TViewManager.Create;
-  FViewManager.ViewContainer := lytMain;
+  FViewManager.ViewContainer := lytContainer;
 end;
 
 procedure TfrmClientMain.FormDestroy(Sender: TObject);
