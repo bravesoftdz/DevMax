@@ -11,25 +11,36 @@ object frmClientMain: TfrmClientMain
   DesignerMasterStyle = 0
   object lytMain: TLayout
     Align = Client
-    Margins.Left = 209.000000000000000000
-    Size.Width = 436.000000000000000000
+    Size.Width = 645.000000000000000000
     Size.Height = 507.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object Rectangle1: TRectangle
       Align = Client
-      Size.Width = 436.000000000000000000
-      Size.Height = 507.000000000000000000
+      Margins.Left = 1.000000000000000000
+      Margins.Top = 1.000000000000000000
+      Margins.Right = 1.000000000000000000
+      Margins.Bottom = 1.000000000000000000
+      Size.Width = 643.000000000000000000
+      Size.Height = 505.000000000000000000
       Size.PlatformDefault = False
+      object Layout1: TLayout
+        Align = Client
+        Size.Width = 643.000000000000000000
+        Size.Height = 505.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+      end
     end
   end
   object MultiView1: TMultiView
-    TargetControl = lytMain
-    Mode = NavigationPane
+    TargetControl = Layout1
+    Mode = Drawer
     NavigationPaneOptions.CollapsedWidth = 209.000000000000000000
     Size.Width = 250.000000000000000000
-    Size.Height = 50.000000000000000000
+    Size.Height = 507.000000000000000000
     Size.PlatformDefault = False
+    Visible = False
     TabOrder = 1
     object Button1: TButton
       Position.X = 16.000000000000000000

@@ -22,14 +22,18 @@ type
 
 implementation
 
-{ TManifestDAO }
-
 uses DevMax.Utils.Marshalling, System.JSON;
+
+{ TManifestDAO }
 
 constructor TManifestRESTDAO.Create;
 begin
   FRESTClient := TRESTClient.Create(nil);
-  FRESTClient.BaseURL := 'http://localhost:8080';
+//{$IFDEF WIN32}
+//  FRESTClient.BaseURL := 'http://localhost:8080';
+//{$ELSE}
+  FRESTClient.BaseURL := 'http://192.168.168.106:8080';
+//{$ENDIF}
 
   FRESTResponse := TRESTResponse.Create(nil);
 
@@ -41,6 +45,9 @@ end;
 
 destructor TManifestRESTDAO.Destroy;
 begin
+  FRESTRequest.Free;
+  FRESTResponse.Free;
+  FRESTClient.Free;
 
   inherited;
 end;

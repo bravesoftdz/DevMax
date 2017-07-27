@@ -14,6 +14,7 @@ type
     MultiView1: TMultiView;
     Rectangle1: TRectangle;
     Button1: TButton;
+    Layout1: TLayout;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -34,6 +35,9 @@ implementation
 procedure TfrmClientMain.Button1Click(Sender: TObject);
 begin
   FViewManager.ShowView('V00000000001');
+//  Layout1.BringToFront;
+//  MultiView1.HideMaster;
+//  MultiView1.BringToFront;
 end;
 
 procedure TfrmClientMain.FormCreate(Sender: TObject);

@@ -27,24 +27,28 @@ type
 
   TMarshall = class
   private
-    /// ARecord의 AField에 AValue를 설정
-    class procedure SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AValue: TJSONValue; AValueName: string = ''); overload;
-    class procedure SetRecordFieldFromJSONValue(ARecordInstance: Pointer; AField: TRttiField; AValue: TJSONValue; AValueName: string = ''); overload;
-    /// ARecordInstance의 AField 배열에 AValue 배열을 설정
-    class procedure SetRecordDynArrayFromJSONArray(ARecordInstance: Pointer; AField: TRttiField; AValue: TJSONValue);
-    /// AField의 FieldNameAttribute 또는 Name(특성이 없는 경우) 반환
+    /// 구조체(ARecord, ARecordInstance)의 필드(AField)에 JSON값으로 값을 채운다.
+    class procedure SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AJSONValue: TJSONValue; AValueName: string = ''); overload;
+    class procedure SetRecordFieldFromJSONValue(ARecordInstance: Pointer; AField: TRttiField; AJSONValue: TJSONValue; AValueName: string = ''); overload;
+    /// 구조체의 동적 배열 필드에 JSON배열의 값으로 길이 설정 후 값을 채운다.
+    class procedure SetRecordDynArrayFromJSONArray(ARecordInstance: Pointer; AArrField: TRttiField; AJSONArray: TJSONArray);
+
+    /// 필드 이름을 특성(FieldNameAttribute) 또는 Field.Name으로 반환
     class function GetFieldName(AField: TRttiField): string;
   public
     // DataSet & JSON
+    /// 하나의 레코드를 JSONObject로 변환
     class procedure DataSetToJSONObject(ADataSet: TDataSet; AJSONObject: TJSONObject); overload;
     class procedure DataSetToJSONObject(ADataSet: TDataSet;
             AFields: TArray<string>; AJSONObject: TJSONObject); overload;
 
+    // 데이터셋의 모든 레코드를 JSONArray로 변환
     class procedure DataSetToJSONArray(ADataSet: TDataSet; AJSONArray: TJSONArray; AJSONObjectProc: TJSONObjectEvent = nil); overload;
     class procedure DataSetToJSONArray(ADataSet: TDataSet;
             AFields: TArray<string>; AJSONArray: TJSONArray; AJSONObjectProc: TJSONObjectEvent = nil); overload;
 
     // JSON & Record
+    /// JSON의 데이터로 구조체에 값을 채운다(동적 배열 포함)
     class procedure JSONToRecord<T>(AObj: TJSONObject; var ARecord: T);
   end;
 
@@ -77,6 +81,8 @@ class procedure TMarshall.DataSetToJSONArray(ADataSet: TDataSet;
 var
   Obj: TJSONObject;
 begin
+  { TODO : 열려있지 않은 경우 예외처리 필요 }
+
   ADataSet.First;
   while not ADataSet.Eof do
   begin
@@ -151,7 +157,7 @@ begin
       TFieldType.ftDateTime:
         AJSONObject.AddPair(Field.FieldName, FormatDateTime('YYYY-MM-DD HH:NN:SS', Field.AsDateTime));
 
-      // boolean
+      // Boolean
       TFieldType.ftBoolean:
         if Field.AsBoolean then
           AJSONObject.AddPair(Field.FieldName, TJSONTrue.Create)
@@ -175,45 +181,48 @@ begin
 end;
 
 // Dynamic Array에 JSON Array 데이터 담기
+{
+  TViewInfo = reocord           // Record
+    Pages: TArray<TViewPage>;   // Dynamic Array(ElmType: TViewPage)
+  end;
+}
 class procedure TMarshall.SetRecordDynArrayFromJSONArray(ARecordInstance: Pointer;
-  AField: TRttiField; AValue: TJSONValue);
+  AArrField: TRttiField; AJSONArray: TJSONArray);
 var
-  I, Len: Integer;
+  I: Integer;
+  Len: NativeInt; // 꼭 NativeInt로 적용(64비트 대응: iOS64 등)
   Ctx: TRttiContext;
   RecVal, ItemVal: TValue;
-  JSONArr: TJSONArray;
   JSONVal: TJSONValue;
-  RawData, ItemRawData: Pointer;
-  ArrType: PTypeInfo;
+  RecRawData, ItemRawData: Pointer;
+  ElmType: PTypeInfo;
   Field: TRttiField;
   FieldName: string;
 begin
-  RecVal := AField.GetValue(ARecordInstance);
+  RecVal := AArrField.GetValue(ARecordInstance);
   if not RecVal.IsArray then
     Exit;
 
-  if not (AValue is TJSONArray) then
+  if not (AJSONArray is TJSONArray) then
     Exit;
 
-  JSONArr := AValue as TJSONArray;
-
-  RawData := RecVal.GetReferenceToRawData; // 배열의 데이터 포인터
-  Len := JSONArr.Count;
+  RecRawData := RecVal.GetReferenceToRawData; // 배열의 데이터 포인터
+  Len := AJSONArray.Count;
   // 동적배열 길이 설정
-  DynArraySetLength(PPointer(RawData)^, RecVal.TypeInfo, 1, @Len);
-  AField.SetValue(ARecordInstance, RecVal); // SetValue 설정 안하면 원래 레코드에 적용 안됨
+  DynArraySetLength(PPointer(RecRawData)^, RecVal.TypeInfo, 1, @Len);
+  AArrField.SetValue(ARecordInstance, RecVal); // SetValue 설정 안하면 원래 레코드에 적용 안됨
 
   // 배열 요소의 타입
-  ArrType := RecVal.TypeData.DynArrElType^;
+  ElmType := RecVal.TypeData.DynArrElType^;
 
   Ctx := TRttiContext.Create;
   try
     for I := 0 to Len - 1 do
     begin
-      JSONVal := JSONArr.Items[I];
+      JSONVal := AJSONArray.Items[I];
       ItemVal := RecVal.GetArrayElement(I);
       ItemRawData := ItemVal.GetReferenceToRawData;
-      for Field in Ctx.GetType(ArrType).GetFields do
+      for Field in Ctx.GetType(ElmType).GetFields do
       begin
         FieldName := GetFieldName(Field);
         SetRecordFieldFromJSONValue(ItemRawData, Field, JSONVal, FieldName);
@@ -227,24 +236,24 @@ end;
 
 /// SetRecordFieldFromJSONValue
 class procedure TMarshall.SetRecordFieldFromJSONValue(ARecordInstance: Pointer;
-  AField: TRttiField; AValue: TJSONValue; AValueName: string);
+  AField: TRttiField; AJSONValue: TJSONValue; AValueName: string);
 var
   OrdValue: Integer;
 begin
   case AField.FieldType.TypeKind of
     tkString, tkLString, tkWString, tkUString:
-      AField.SetValue(ARecordInstance, TValue.From<string>(AValue.GetValue<string>(AValueName)));
+      AField.SetValue(ARecordInstance, TValue.From<string>(AJSONValue.GetValue<string>(AValueName)));
     tkInteger, tkInt64:
-      AField.SetValue(ARecordInstance, TValue.From<Integer>(AValue.GetValue<Integer>(AValueName, -1)));
+      AField.SetValue(ARecordInstance, TValue.From<Integer>(AJSONValue.GetValue<Integer>(AValueName, -1)));
     tkFloat:
-      AField.SetValue(ARecordInstance, TValue.From<Single>(AValue.GetValue<Single>(AValueName, -1)));
+      AField.SetValue(ARecordInstance, TValue.From<Single>(AJSONValue.GetValue<Single>(AValueName, -1)));
     tkEnumeration:
       begin
-        if not AValue.TryGetValue<Integer>(AValueName, OrdValue) then
+        if not AJSONValue.TryGetValue<Integer>(AValueName, OrdValue) then
         begin
           // 열거형 문자열인 경우 처리(taRight 등)
           OrdValue := GetEnumValue(AField.FieldType.Handle,
-                          AValue.GetValue<string>(AValueName)); // 열거형 문자열을 숫자로 전환
+                          AJSONValue.GetValue<string>(AValueName)); // 열거형 문자열을 숫자로 전환
         end;
 
         if OrdValue < 0 then
@@ -256,8 +265,8 @@ begin
       begin
         // JSON Array
         if AValueName <> '' then
-          AValue := AValue.GetValue<TJSONValue>(AValueName, nil);
-        SetRecordDynArrayFromJSONArray(ARecordInstance, AField, AValue);
+          AJSONValue := AJSONValue.GetValue<TJSONValue>(AValueName, nil);
+        SetRecordDynArrayFromJSONArray(ARecordInstance, AField, AJSONValue as TJSONArray);
       end;
     tkRecord:
       ;
@@ -267,14 +276,13 @@ begin
   end;
 end;
 
-class procedure TMarshall.SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AValue: TJSONValue; AValueName: string = '');
+class procedure TMarshall.SetRecordFieldFromJSONValue(var ARecord; AField: TRttiField; AJSONValue: TJSONValue; AValueName: string = '');
 begin
-  SetRecordFieldFromJSONValue(@ARecord, AField, AValue, AValueName);
+  SetRecordFieldFromJSONValue(@ARecord, AField, AJSONValue, AValueName);
 end;
 
 class procedure TMarshall.JSONToRecord<T>(AObj: TJSONObject;
   var ARecord: T);
-
 var
   Ctx: TRttiContext;
   Field: TRttiField;
@@ -289,7 +297,6 @@ begin
       Value := AObj.Values[FieldName];
       if not Assigned(Value) then
         Continue;
-//        raise Exception.CreateFmt('Not found field.(Name: %s)', [FieldName]);
 
       SetRecordFieldFromJSONValue(ARecord, Field, Value);
     end;

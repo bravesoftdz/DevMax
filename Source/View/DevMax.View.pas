@@ -3,8 +3,8 @@ unit DevMax.View;
 interface
 
 uses
+  FMX.Controls, FMX.Types,
   System.Generics.Collections,
-  FMX.Controls,
   DevMax.Types.ViewInfo, DevMax.View.Types, DevMax.View.Control;
 
 type
@@ -53,10 +53,11 @@ type
     FView: TView;
     FViewItems: TDictionary<string, IViewItem>;
 
+    FControl: TViewPageControlItem;
+
     procedure CreateViewItems(AParent: TControl; AViewItems: TArray<TViewItemInfo>);
   public
-    constructor Create(APageId: string; AView: TView;
-  APageInfo: TViewPageInfo);
+    constructor Create(APageId: string; AView: TView; APageInfo: TViewPageInfo);
     destructor Destroy; override;
 
     property Id: string read FPageId;
@@ -79,6 +80,8 @@ begin
   FViewPages := TDictionary<string, TViewPage>.Create;
 
   FPageControl := TViewPageControl.Create(nil);
+  FPageControl.Align := TAlignLayout.Client;
+  FPageControl.Parent := AContainer;
 end;
 
 destructor TView.Destroy;
@@ -174,12 +177,16 @@ begin
 
   FViewItems := TDictionary<string, IViewItem>.Create;
 
-  CreateViewItems(AView.Control, APageInfo.ViewItems);
+  FControl := TViewPageControlItem.Create(nil);
+  FControl.Parent := AView.Control;
+
+  CreateViewItems(FControl, APageInfo.ViewItems);
 end;
 
 destructor TViewPage.Destroy;
 begin
   FViewItems.Free;
+  FControl.Free;
 
   inherited;
 end;
@@ -192,7 +199,7 @@ var
 begin
   for ItemInfo in AViewItems do
   begin
-    ItemInstance := TViewItemFactory.Instance.CreateControl(ItemInfo.ITEM_ID);
+    ItemInstance := TViewItemFactory.Instance.CreateControl(ItemInfo.ITEM_CLS_ID);
     if not Assigned(ItemInstance) then
       Continue;
 
@@ -202,6 +209,7 @@ begin
     if Supports(ItemInstance, IViewItem, ViewItem) then
       FViewItems.Add(ItemInfo.ITEM_ID, ViewItem);
 
+    // Child Item »ý¼º
     if Length(ItemInfo.ViewItems) > 0 then
     begin
       if Supports(ItemInstance, IViewItemContainer) then

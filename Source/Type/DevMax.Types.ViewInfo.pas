@@ -67,7 +67,7 @@ type
 //    ViewDatas: TArray<TViewDataInfo>;
 
     function TryGetPageInfo(APageId: string;
-  out PageInfo: TViewPageInfo): Boolean;
+      out PageInfo: TViewPageInfo): Boolean;
   end;
 
 implementation

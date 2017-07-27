@@ -17,7 +17,6 @@ type
     FActiveView: TView;
 
     FManifestService: IManifestService;
-//    FViewController: TViewController;
 
     function CreateView(AViewId: string): TView;
     function GetOrCreateView(AViewId: string): TView;
@@ -29,7 +28,7 @@ type
     destructor Destroy; override;
 
     property ViewContainer: TControl read FViewControl write FViewControl;
-    property ManifestService: IManifestService read GetManifestService write FManifestService;
+    property ManifestService: IManifestService read GetManifestService {$IFDEF TEST}write FManifestService{$ENDIF};
     property Views: TArray<TView> read GetViews;
 
     procedure ShowView(AViewId: string);
@@ -74,7 +73,7 @@ begin
     raise Exception.Create('Not assigned IManifestManager');
 
   if not ManifestService.TryGetViewInfo(AViewId, ViewInfo) then
-    raise Exception.Create('Error Message');
+    raise Exception.Create('View 정보를 가져올 수 없습니다.');
 
   Result := TView.Create(AViewId, FViewControl, ViewInfo);
 

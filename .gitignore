@@ -64,3 +64,8 @@ __recovery/
 
 # Castalia statistics file (since XE7 Castalia is distributed with Delphi)
 *.stat
+/Source/Client/iOSDevice64/Debug/DevMaxClient
+/Source/Client/iOSDevice64/Debug/DevMaxClient.dSYM
+/Source/Client/iOSDevice64/Debug/DevMaxClient.entitlements
+/Source/Client/iOSDevice64/Debug/DevMaxClient.info.plist
+/Source/Client/iOSDevice64/Debug/ResourceRules.plist
